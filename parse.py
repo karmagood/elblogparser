@@ -26,8 +26,8 @@ def count(file, col, client, backend, request_type, url):
             request["ssl_cipher"], \
             request["ssl_protocol"] = line
             request["total_time"] = float(request["request_processing_time"]) \
-                                    + float(request["backend_processing_time"]) + float(
-                request["response_processing_time"])
+                                    + float(request["backend_processing_time"]) \
+                                    + float(request["response_processing_time"])
             request["client_ip"] = request["client"][:-5]
             request["backend_ip"] = request["backend"][:-5]
             request["request_type"], request["requested_url"], request['protocol'] = request['request'].split(" ")
@@ -35,11 +35,11 @@ def count(file, col, client, backend, request_type, url):
             if not backend: backend = ("",)
             if not request_type: request_type = ("",)
             if not url: url = ("",)
-            if any(cl in request["client"] for cl in client) and any(bk in request["backend"] for bk in backend) and \
-                    any(rt in request["request_type"] for rt in request_type) and any(
-                        ur in request["request"] for ur in url):
-
-                request_key = tuple(request[val] for val in col if val not in ['count'])
+            if any(cl in request["client"] for cl in client) and \
+                    any(bk in request["backend"] for bk in backend) and \
+                    any(rt in request["request_type"] for rt in request_type) and \
+                    any(ur in request["request"] for ur in url):
+                request_key = tuple(request[val] for val in col if val != 'count')
                 if not counted_requests.get(request_key):
                     counted_requests[request_key] = 1
                 else:
@@ -48,17 +48,21 @@ def count(file, col, client, backend, request_type, url):
 
 
 def order(requests, col, ascending, order_by):
-    list_requests = [[item[1]]+[i for i in item[0]] for item in requests.items()]
+    list_requests = []
+    for item in requests.items():
+        item_list = [i for i in item[0]]
+        item_list.insert(col.index('count'), item[1])
+        list_requests.append(item_list)
     return list(sorted(list_requests, key=lambda t: t[order_by], reverse=not ascending))
 
 
 def write_report(requests, limit, output_file):
     if output_file:
         with open(output_file, "w+") as report:
-            for request in requests[:limit]:
-                report.write(" ".join(list(map(str, request))))
+            for request in requests[:limit+1]:
+                report.write(" ".join(list(map(str, request))+["\n"]))
     else:
-        for request in requests[:limit]:
+        for request in requests[:limit+1]:
             print(" ".join(list(map(str, request))))
 
 
@@ -73,7 +77,7 @@ def write_report(requests, limit, output_file):
 @click.option('--request_type', type=str, help="Count only exact request types.", multiple=True)
 @click.option('--url', type=str, help="Count only exact url.", multiple=True)
 @click.option('--ascending', is_flag=True, help="Sort in ascending order.")
-@click.option('--order_by', default=0, type=int, help="Column number to order rows by. Starts from 0." )
+@click.option('--order_by', default=0, type=int, help="Column number to order rows by. Starts from 0.")
 def main(log_file, folder, output_file, col, limit, client, backend, request_type, url, ascending, order_by):
     counted_requests_all = {}
     path_to = ""
@@ -82,8 +86,8 @@ def main(log_file, folder, output_file, col, limit, client, backend, request_typ
         files = os.listdir(folder)
         path_to = folder
     with click.progressbar(files, label='Parsing Log files.') as files_bar:
-        for file in files_bar:
-            counted_requests = count(os.path.join(path_to, file), col, client, backend, request_type, url)
+        for logs in files_bar:
+            counted_requests = count(os.path.join(path_to, logs), col, client, backend, request_type, url)
             for key in counted_requests.keys():
                 if not counted_requests_all.get(key):
                     counted_requests_all[key] = counted_requests[key]
