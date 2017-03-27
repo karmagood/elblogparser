@@ -1,15 +1,14 @@
 import os
 import click
 import csv
-from collections import OrderedDict
 
 
-def count(file, col, client, backend, request_type, url):
+def count(log_file, col, client, backend, request_type, url):
     counted_requests = {}
-    with open(file) as log_file:
-        filereader = csv.reader(log_file, delimiter=" ")
-        for line in filereader:
-            request = {}
+    with open(log_file) as logs:
+        file_reader = csv.reader(logs, delimiter=" ")
+        for line in file_reader:
+            request = dict()
             request["timestamp"], \
             request["elb"], \
             request["client"], \
@@ -63,8 +62,16 @@ def write_report(requests, limit, output_file):
                 report.write(" ".join(list(map(str, request))+["\n"]))
     else:
         for request in requests[:limit+1]:
-            print(" ".join(list(map(str, request))))
-
+            line = ""
+            colors = ["yellow", "red", "green", "blue", "magenta", "cyan"]
+            color = 0
+            request = map(str, request)
+            for word in request:
+                if color > len(colors):
+                    color = 0
+                line += click.style(" "+word, fg=colors[color])
+                color += 1
+            click.echo(line)
 
 @click.command()
 @click.option('--log_file', '-l', type=str, help="Log file to parse.", multiple=True)
