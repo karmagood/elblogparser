@@ -54,13 +54,18 @@ Possible columns
 Call with options
 
 ```
-    python parse.py -f ~/logs_folder/ --col count --col requested_url --col client
-    --col backend --col total_time --limit 10 --url example.com:443/api/cats
-    --order_by 4
+python parse.py -f ~/logs_folder/ --col count --col requested_url --col client
+                --col backend --col total_time --limit 4 --url example.com:443/api/cats
+                --order_by 4
 
 ```
 
 Output
 
 ```
+ 23 https://example.com:443/api/cats 222.33.111.111:22222 111.33.22.111:80 39.765626
+ 311 https://example.com:443/api/cat/90176729c63148399d8c1c0505c61d41 222.33.111.111:3030 111.33.46.77:80 38.613223
+ 10 https://example.com:443/api/cat/7bcd68645dd649c19859737ff5910b9c 222.33.111.111:21121 111.33.23.111:80 37.137377
+ 42 https:// example.com:443/api/cat/ac9c1629d5c1492aa9e1978b351edce1 222.33.111.111:3434 111.33.23.121:80 36.912306
+
 ```
