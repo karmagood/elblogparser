@@ -56,14 +56,14 @@ def order(requests, col, ascending, order_by):
 
 
 def write_report(requests, limit, output_file):
+    colors = ["yellow", "green", "magenta", "blue", "red", "cyan"]
     if output_file:
         with open(output_file, "w+") as report:
-            for request in requests[:limit+1]:
-                report.write(" ".join(list(map(str, request))+["\n"]))
+            for request in requests[:limit]:
+                report.write(" ".join(["     "]+list(map(str, request))+["\n"]))
     else:
-        for request in requests[:limit+1]:
+        for request in requests[:limit]:
             line = ""
-            colors = ["yellow", "red", "green", "blue", "magenta", "cyan"]
             color = 0
             request = map(str, request)
             for word in request:
