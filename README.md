@@ -3,6 +3,7 @@
  virtualenv elblogparser
  cd elblogparser
  git clone https://github.com/karmagood/elblogparser.git
+ cd elblogparser
  pip install -r requirements.txt
 ```
 Now you can run parse.py with any options needed. Default columns ['count', 'client'] are printed into console.
