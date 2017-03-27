@@ -10,6 +10,7 @@ Now you can run parse.py with any options needed. Default columns ['count', 'cli
 
 ## Usage: parse.py [OPTIONS]
 
+```
 Options:
   -l, --log_file TEXT     Log file to parse.
   -f, --folder TEXT       Log files folder path.
@@ -24,20 +25,19 @@ Options:
   --ascending             Sort in ascending order.
   --order_by INTEGER      Column number to order rows by. Starts from 0.
   --help                  Show this message and exit.
-
+```
 ## Examples
 
 Call with options
 
-'''
+```
     python parse.py -f ~/logs_folder/ --col count --col requested_url --col client
     --col backend --col total_time --limit 10 --url example.com:443/api/cats
     --order_by 4
 
-'''
+```
 
 Output
 
-'''
-
-'''
+```
+```
